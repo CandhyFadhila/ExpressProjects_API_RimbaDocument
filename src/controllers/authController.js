@@ -97,61 +97,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// ========== GET USER INFO CONTROLLER ==========
-exports.getUserInfo = async (req, res) => {
-  const userId = req.userId; // Diperoleh dari middleware authMiddleware
-
-  try {
-    // Ambil data user dari database berdasarkan userId
-    const user = await knex("users").where({ id: userId }).first();
-
-    // Jika user tidak ditemukan
-    if (!user) {
-      const response = new WithoutDataResource(
-        401, // HTTP Status Code: Unauthorized
-        "ACCOUNT_NOT_FOUND",
-        "Akses Ditolak",
-        "Maaf, akun pengguna terkait tidak ditemukan."
-      );
-      logger.info(`| GetUserInfo | - Account not found for userId: ${userId}`);
-      return res.status(401).json(response.toResponse());
-    }
-
-    // Sembunyikan atribut sensitif, seperti password
-    const filteredUser = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      username: user.username,
-      last_login: user.last_login,
-    };
-
-    // Log info sukses
-    logger.info(
-      `| GetUserInfo | - User info fetched for userId: ${userId}, at ${new Date().toISOString()}`
-    );
-
-    // Response sukses dengan data pengguna
-    const response = new WithDataResource(
-      200, // HTTP Status Code: OK
-      "SUCCESS_GET_USER_INFO",
-      "Berhasil Mendapatkan Data",
-      `Data pengguna ${user.name}, berhasil didapatkan.`,
-      { user: filteredUser }
-    );
-    res.status(200).json(response.toResponse());
-  } catch (error) {
-    logger.error(`| Auth | - Error function getUserInfo: ${error.message}`);
-    const response = new WithoutDataResource(
-      500, // HTTP Status Code: Internal Server Error
-      "SERVER_ERROR",
-      "Server Sedang Error",
-      "Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin."
-    );
-    res.status(500).json(response.toResponse());
-  }
-};
-
 // ========== LOGOUT CONTROLLER ==========
 exports.logout = async (req, res) => {
   const userId = req.userId; // Diperoleh dari middleware authMiddleware

@@ -7,7 +7,7 @@ const db = knex({
     port: 5433,
     user: "postgres",
     password: "super.admin",
-    database: "mamura_dokumen",
+    database: "rimba_dokumen",
   },
   pool: {
     min: 2,

@@ -4,7 +4,7 @@ async function getPgClientWindows() {
   const client = new Client({
     host: "localhost",
     user: "postgres",
-    database: "mamura_dokumen",
+    database: "rimba_dokumen",
     password: "super.admin",
     port: 5433,
   });

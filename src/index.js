@@ -18,7 +18,7 @@ app.use(morgan("dev"));
 
 // Cek API root
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the API GIS!" });
+  res.json({ message: "Welcome to the Rimba Document!" });
 });
 
 // Cek db
