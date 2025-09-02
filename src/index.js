@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const morgan = require("morgan");
 const knex = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
@@ -45,7 +44,7 @@ app.use("/api", authRoutes);
 
 // Route Documents
 app.use("/storage", express.static(path.join(__dirname, "public", "storage")));
-app.use("/api/gis-bpn/documents", documentRoutes);
+app.use("/api/rimba/document", documentRoutes);
 
 // Jalankan server
 const PORT = process.env.PORT || 3001;

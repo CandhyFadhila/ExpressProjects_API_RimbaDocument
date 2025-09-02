@@ -7,7 +7,6 @@ const rateLimiter = require("../middlewares/rateLimitMiddleware");
 
 // Auth
 router.post("/signin", rateLimiter, loginValidator, authController.login);
-router.get("/user-info", rateLimiter, authMiddleware, authController.getUserInfo);
 router.get("/signout", rateLimiter, authMiddleware, authController.logout);
 
 module.exports = router;

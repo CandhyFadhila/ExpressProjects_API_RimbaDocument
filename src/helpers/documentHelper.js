@@ -13,8 +13,8 @@ function generateRandomString(length = 25) {
 }
 
 function formatFileSize(bytes) {
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  if (bytes === 0) return "0 B";
+  const sizes = ["b", "kB", "mB", "gB", "tB"];
+  if (bytes === 0) return 0;
   const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
   return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
 }
@@ -34,10 +34,10 @@ async function uploadDocuments(files) {
   try {
     if (!fs.existsSync(destinationDir)) {
       fs.mkdirSync(destinationDir, { recursive: true });
-      logger.info(`| uploadDocuments | - Folder dibuat: ${destinationDir}`);
+      logger.info(`| Upload Documents Server Helper | - Folder dibuat: ${destinationDir}`);
     }
   } catch (err) {
-    logger.error(`| uploadDocuments | - Gagal membuat folder: ${err.message}`);
+    logger.error(`| Upload Documents Server Helper | - Gagal membuat folder: ${err.message}`);
     throw new Error("Gagal menyiapkan direktori penyimpanan dokumen.");
   }
 
@@ -64,26 +64,23 @@ async function uploadDocuments(files) {
           file_mime_type: mimeType,
           file_size: fileSizeRaw,
         })
-        .returning(["id", "created_at", "updated_at", "deleted_at"]);
+        .returning(["id", "created_at", "updated_at"]);
 
       const inserted = result[0];
 
       uploadedResults.push({
-        id: inserted.id,
-        filename: randomName,
-        file_path: relativePath,
-        file_url: fileUrl,
-        file_mime_type: mimeType,
-        file_size: fileSizeFormatted,
-        created_at: inserted.created_at,
-        updated_at: inserted.updated_at,
-        deleted_at: inserted.deleted_at,
+        server_file_id: inserted.id,
+        server_file_name: randomName,
+        server_file_path: relativePath,
+        server_file_url: fileUrl,
+        server_file_mime_type: mimeType,
+        server_file_size: fileSizeFormatted
       });
 
-      logger.info(`| uploadDocuments | - Success: ${randomName}`);
+      logger.info(`| Upload Documents Server Helper | - Success: ${randomName}`);
     } catch (err) {
       logger.error(
-        `| uploadDocuments | - Failed on file ${file.originalname}: ${err.message}`
+        `| Upload Documents Server Helper | - Failed on file ${file.originalname}: ${err.message}`
       );
     }
   }
@@ -99,10 +96,9 @@ async function deleteDocuments(documentIds = []) {
       const document = await knex("documents")
         .select("file_path")
         .where({ id })
-        .whereNull("deleted_at")
         .first();
       if (!document) {
-        logger.warn(`| deleteDocuments | - Dokumen ID ${id} tidak ditemukan.`);
+        logger.warn(`| Delete Documents Server Helper | - Dokumen ID ${id} tidak ditemukan.`);
         continue;
       }
 
@@ -112,17 +108,17 @@ async function deleteDocuments(documentIds = []) {
         fs.unlinkSync(filePath);
       } else {
         logger.warn(
-          `| deleteDocuments | - File tidak ditemukan di path: ${filePath}`
+          `| Delete Documents Server Helper | - File tidak ditemukan di path: ${filePath}`
         );
       }
 
       await knex("documents").where({ id }).del();
 
       deleted.push(id);
-      logger.info(`| deleteDocuments | - Dokumen ${id} berhasil dihapus.`);
+      logger.info(`| Delete Documents Server Helper | - Dokumen ${id} berhasil dihapus.`);
     } catch (error) {
       logger.error(
-        `| deleteDocuments | - Gagal menghapus dokumen ${id}: ${error.message}`
+        `| Delete Documents Server Helper | - Gagal menghapus dokumen ${id}: ${error.message}`
       );
     }
   }
