@@ -40,11 +40,11 @@ app.get("/check-db", async (req, res) => {
 });
 
 // Route API
-app.use("/api", authRoutes);
+app.use("/api/rimba/docs", authRoutes);
 
 // Route Documents
 app.use("/storage", express.static(path.join(__dirname, "public", "storage")));
-app.use("/api/rimba/document", documentRoutes);
+app.use("/api/rimba/docs", documentRoutes);
 
 // Jalankan server
 const PORT = process.env.PORT || 3001;
