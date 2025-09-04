@@ -6,6 +6,7 @@ const logger = require("../utils/logger");
 const knex = require("../config/database");
 const WithDataResource = require("../resources/WithDataResource");
 const WithoutDataResource = require("../resources/WithoutDataResource");
+const JWT_SECRET = process.env.JWT_SECRET_KEY || "secretkey";
 
 // ========== LOGIN CONTROLLER ==========
 exports.login = async (req, res) => {
@@ -61,7 +62,7 @@ exports.login = async (req, res) => {
 
     // Create JWT token
     const payload = { userId: user.id };
-    const token = jwt.sign(payload, "secretkey");
+    const token = jwt.sign(payload, JWT_SECRET);
 
     // Log successful login
     logger.info(
@@ -81,7 +82,7 @@ exports.login = async (req, res) => {
       200, // HTTP Status Code: OK
       "LOGIN_SUCCESS",
       "Login Berhasil.",
-      "Selamat datang, anda berhasil login.",
+      "Selamat datang, anda berhasil login di server Rimba Dokumen.",
       { token, user: filteredUser }
     );
     res.status(200).json(response.toResponse());
