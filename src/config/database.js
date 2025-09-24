@@ -1,14 +1,29 @@
 const knex = require("knex");
 
-const db = knex({
-  client: "pg",
-  connection: {
+const env = (process.env.PG_ENV || "windows").toLowerCase();
+
+const connections = {
+  windows: {
     host: "localhost",
     port: 5433,
     user: "postgres",
     password: "super.admin",
     database: "rimba_dokumen",
   },
+  linux: {
+    host: "localhost",
+    port: 5432,
+    user: "user_rimba",
+    password: "password_kuat",
+    database: "doc_rimba",
+  },
+};
+
+const connection = connections[env] || connections.windows;
+
+const db = knex({
+  client: "pg",
+  connection,
   pool: {
     min: 2,
     max: 50,

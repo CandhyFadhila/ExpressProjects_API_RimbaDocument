@@ -1,16 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const crypto = require("crypto");
 const knex = require("../config/database");
 const logger = require("../utils/logger");
-
-function generateRandomString(length = 25) {
-  return crypto
-    .randomBytes(length)
-    .toString("base64")
-    .replace(/\W/g, "")
-    .substring(0, length);
-}
 
 function formatFileSize(bytes) {
   const sizes = ["b", "kB", "mB", "gB", "tB"];
@@ -92,7 +83,7 @@ async function uploadDocuments(files) {
       });
 
       logger.info(
-        `| Upload Documents Server Helper | - Success: ${path.basename(finalPath)}`
+        `| Upload Documents Server Helper | - Success: ${path.basename(finalPath)} (${fileSizeFormatted})`
       );
     } catch (err) {
       logger.error(
