@@ -43,10 +43,10 @@ app.get("/check-db", async (req, res) => {
   try {
     // Cek koneksi berdasarkan environment (Linux/Windows)
     const env = process.env.PG_ENV || "windows";
-    const dbConnection = require("./config/database"); // ini file database.js
+    const database = require("./config/database"); // ini file database.js
 
     // Panggil query untuk cek waktu server database
-    const result = await dbConnection.raw("SELECT NOW()");
+    const result = await database.raw("SELECT NOW()");
 
     res.json({
       status: "success",
