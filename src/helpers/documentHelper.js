@@ -3,6 +3,17 @@ const path = require("path");
 const knex = require("../config/database");
 const logger = require("../utils/logger");
 
+function isLinux() {
+  return (
+    String(process.env.PG_ENV || "windows")
+      .trim()
+      .toLowerCase() === "linux"
+  );
+}
+function resolvePublicBaseUrl(port = 3001) {
+  return isLinux() ? "https://doc.rimbaexium.org" : `http://localhost:${port}`;
+}
+
 function formatFileSize(bytes) {
   const sizes = ["b", "kB", "mB", "gB", "tB"];
   if (bytes === 0) return 0;
@@ -55,8 +66,9 @@ async function uploadDocuments(files) {
 
       fs.renameSync(file.path, finalPath); // move file
 
+      const baseUrl = resolvePublicBaseUrl(3001);
       const relativePath = `storage/documents/${path.basename(finalPath)}`;
-      const fileUrl = `${process.env.APP_URL}/${relativePath}`;
+      const fileUrl = `${baseUrl}/${relativePath}`;
       const mimeType = file.mimetype;
       const fileSizeRaw = file.size; // in bytes (integer)
       const fileSizeFormatted = formatFileSize(fileSizeRaw);
@@ -83,7 +95,9 @@ async function uploadDocuments(files) {
       });
 
       logger.info(
-        `| Upload Documents Server Helper | - Success: ${path.basename(finalPath)} (${fileSizeFormatted})`
+        `| Upload Documents Server Helper | - Success: ${path.basename(
+          finalPath
+        )} (${fileSizeFormatted})`
       );
     } catch (err) {
       logger.error(
