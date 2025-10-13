@@ -18,14 +18,23 @@ function isLinux() {
 }
 
 function resolvePublicBaseUrl(port) {
-  return isLinux() ? "https://doc.rimbaexium.org" : `http://localhost:${port}`;
+  // Ini setup laptop sendi
+  // return isLinux() ? "https://doc.rimbaexium.org" : `http://localhost:${port}`;
+
+  // Ini setup laptop reza
+  return isLinux()
+    ? "https://doc-rimba.exium.my.id/"
+    : `http://localhost:${port}`;
 }
 
 if (isLinux()) {
   app.set("trust proxy", 1);
 }
 
+// Ini setup laptop sendi
 // const PORT = 3001;
+
+// Ini setup laptop reza
 const PORT = 4001;
 app.locals.baseUrl = resolvePublicBaseUrl(PORT);
 
