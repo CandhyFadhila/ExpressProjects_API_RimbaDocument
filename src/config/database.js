@@ -20,14 +20,6 @@ const connections = {
   },
   linux: {
     host: "localhost",
-
-    // Ini setup laptop sendi
-    // port: 5432,
-    // user: "user_rimba",
-    // password: "password_kuat",
-    // database: "doc_rimba",
-
-    // Ini setup laptop reza
     port: 5432,
     user: "postgres",
     password: "super.admin",

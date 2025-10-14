@@ -10,8 +10,8 @@ function isLinux() {
       .toLowerCase() === "linux"
   );
 }
-function resolvePublicBaseUrl(port = 3001) {
-  return isLinux() ? "https://doc.rimbaexium.org" : `http://localhost:${port}`;
+function resolvePublicBaseUrl(port = 4001) {
+  return isLinux() ? "https://doc-rimba.exium.my.id" : `http://localhost:${port}`;
 }
 
 function formatFileSize(bytes) {
