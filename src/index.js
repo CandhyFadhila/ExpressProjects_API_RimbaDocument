@@ -18,7 +18,7 @@ function isLinux() {
 }
 
 function resolvePublicBaseUrl(port) {
-  return isLinux() ? "http://192.168.0.100:4001" : `http://localhost:${port}`;
+  return isLinux() ? "https://doc-rimba.exium.my.id" : `http://localhost:${port}`;
 }
 
 if (isLinux()) {
