@@ -11,7 +11,7 @@ function isLinux() {
   );
 }
 function resolvePublicBaseUrl(port = 4001) {
-  return isLinux() ? "https://doc-rimba.exium.my.id" : `http://localhost:${port}`;
+  return isLinux() ? "https://doc.rimbaexium.org" : `http://localhost:${port}`;
 }
 
 function formatFileSize(bytes) {

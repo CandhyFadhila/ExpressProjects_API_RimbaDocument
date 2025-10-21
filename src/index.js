@@ -18,7 +18,7 @@ function isLinux() {
 }
 
 function resolvePublicBaseUrl(port) {
-  return isLinux() ? "https://doc-rimba.exium.my.id" : `http://localhost:${port}`;
+  return isLinux() ? "https://doc.rimbaexium.org" : `http://localhost:${port}`;
 }
 
 if (isLinux()) {
@@ -74,6 +74,6 @@ app.use("/api/rimba/docs", documentRoutes);
 // Jalankan server
 app.listen(PORT, () => {
   // Di windows akan log: http://localhost:4001
-  // Di linux akan log:   http://192.168.0.100:4001
+  // Di linux akan log:   https://doc.rimbaexium.org
   console.log(`Server berjalan di ${app.locals.baseUrl} (listen port ${PORT})`);
 });
