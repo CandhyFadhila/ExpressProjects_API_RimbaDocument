@@ -13,7 +13,7 @@ function isLinux() {
 
 function resolvePublicBaseUrl(port = 4001) {
   return isLinux()
-    ? "https://doc.rimbaexium.org:3001"
+    ? "https://doc.rimbaexium.org"
     : `http://localhost:${port}`;
 }
 
