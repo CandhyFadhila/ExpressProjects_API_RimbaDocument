@@ -5,15 +5,15 @@ const logger = require("../utils/logger");
 
 function isLinux() {
   return (
-    String(process.env.PG_ENV || "windows")
+    String(process.env.PG_ENV || "development")
       .trim()
-      .toLowerCase() === "linux"
+      .toLowerCase() === "production"
   );
 }
 
 function resolvePublicBaseUrl(port = 4001) {
   return isLinux()
-    ? "https://doc.rimbaexium.org"
+    ? "https://apidocwg.rimbaexium.org"
     : `http://localhost:${port}`;
 }
 

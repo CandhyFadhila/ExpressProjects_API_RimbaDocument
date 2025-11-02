@@ -9,19 +9,21 @@ const corsMiddleware = require("./middlewares/cors");
 
 const app = express();
 
-function isLinux() {
+function isProduction() {
   return (
-    String(process.env.PG_ENV || "windows")
+    String(process.env.PG_ENV || "development")
       .trim()
-      .toLowerCase() === "linux"
+      .toLowerCase() === "production"
   );
 }
 
 function resolvePublicBaseUrl(port) {
-  return isLinux() ? "https://doc.rimbaexium.org" : `http://localhost:${port}`;
+  return isProduction()
+    ? "https://apidocwg.rimbaexium.org"
+    : `http://localhost:${port}`;
 }
 
-if (isLinux()) {
+if (isProduction()) {
   app.set("trust proxy", 1);
 }
 
@@ -42,7 +44,7 @@ app.get("/", (req, res) => {
 app.get("/check-db", async (req, res) => {
   try {
     // Cek koneksi berdasarkan environment (Linux/Windows)
-    const env = process.env.PG_ENV || "windows";
+    const env = process.env.PG_ENV || "development";
     const database = require("./config/database"); // ini file database.js
 
     // Panggil query untuk cek waktu server database
@@ -73,7 +75,7 @@ app.use("/api/rimba/docs", documentRoutes);
 
 // Jalankan server
 app.listen(PORT, () => {
-  // Di windows akan log: http://localhost:4001
-  // Di linux akan log:   https://doc.rimbaexium.org
+  // Di development akan log: http://localhost:4001
+  // Di production akan log:   https://apidocwg.rimbaexium.org
   console.log(`Server berjalan di ${app.locals.baseUrl} (listen port ${PORT})`);
 });
