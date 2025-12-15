@@ -2,32 +2,69 @@ const fs = require("fs");
 const path = require("path");
 const knex = require("../config/database");
 const logger = require("../utils/logger");
+const { resolvePublicBaseUrl } = require("../utils/baseUrl");
 
-function isLinux() {
-  return (
-    String(process.env.PG_ENV || "windows")
-      .trim()
-      .toLowerCase() === "linux"
-  );
-}
-
-function resolvePublicBaseUrl(port = 4001) {
-  return isLinux()
-    ? "https://doc.rimbaexium.org"
-    : `http://localhost:${port}`;
-}
-
+/**
+ * formatFileSize
+ * Mengubah ukuran file (bytes) menjadi string yang mudah dibaca.
+ */
 function formatFileSize(bytes) {
   const sizes = ["b", "kB", "mB", "gB", "tB"];
-  if (bytes === 0) return 0;
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+  if (!bytes || bytes === 0) return "0 b";
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
 }
 
+/**
+ * joinUrl
+ * Menggabungkan baseUrl dan path (tanpa double slash).
+ */
+function joinUrl(baseUrl, relativePath) {
+  const base = String(baseUrl || "").replace(/\/+$/, "");
+  const rel = String(relativePath || "").replace(/^\/+/, "");
+  return `${base}/${rel}`;
+}
+
+/**
+ * ensureDir
+ * Memastikan folder tujuan tersedia.
+ */
+function ensureDir(dirPath) {
+  if (fs.existsSync(dirPath)) return;
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+
+/**
+ * resolveUniquePath
+ * Membuat path unik jika nama file sudah ada (pakai (1), (2), dst).
+ */
+function resolveUniquePath(destinationDir, originalName) {
+  const safeName = path.basename(originalName || "file");
+  const extension = path.extname(safeName);
+  const nameWithoutExt = path.basename(safeName, extension);
+
+  let finalPath = path.join(destinationDir, safeName);
+  let counter = 1;
+
+  while (fs.existsSync(finalPath)) {
+    finalPath = path.join(
+      destinationDir,
+      `${nameWithoutExt}(${counter})${extension}`
+    );
+    counter += 1;
+  }
+
+  return finalPath;
+}
+
+/**
+ * uploadDocuments
+ * Menyimpan file ke storage lokal (public/storage/documents) dan mencatat metadata ke DB.
+ */
 async function uploadDocuments(files) {
   const uploadedResults = [];
+  const normalizedFiles = Array.isArray(files) ? files : [];
 
-  // Buat direktori target sekali di awal
   const destinationDir = path.join(
     __dirname,
     "..",
@@ -37,43 +74,31 @@ async function uploadDocuments(files) {
   );
 
   try {
-    if (!fs.existsSync(destinationDir)) {
-      fs.mkdirSync(destinationDir, { recursive: true });
-      logger.info(
-        `| Upload Documents Server Helper | - Folder dibuat: ${destinationDir}`
-      );
-    }
+    ensureDir(destinationDir);
+    logger.info(
+      `| Upload Documents Server Helper | - Folder siap: ${destinationDir}`
+    );
   } catch (err) {
     logger.error(
-      `| Upload Documents Server Helper | - Gagal membuat folder: ${err.message}`
+      `| Upload Documents Server Helper | - Gagal menyiapkan folder: ${err.message}`
     );
     throw new Error("Gagal menyiapkan direktori penyimpanan dokumen.");
   }
 
-  // Proses masing-masing file
-  for (const file of files) {
+  const baseUrl = resolvePublicBaseUrl();
+
+  for (const file of normalizedFiles) {
     try {
-      const extension = path.extname(file.originalname);
-      const destinationPath = path.join(destinationDir, file.originalname);
+      const originalName = path.basename(file.originalname || "file");
+      const finalPath = resolveUniquePath(destinationDir, originalName);
 
-      let finalPath = destinationPath;
-      let counter = 1;
-      while (fs.existsSync(finalPath)) {
-        const nameWithoutExt = path.basename(file.originalname, extension);
-        finalPath = path.join(
-          destinationDir,
-          `${nameWithoutExt}(${counter})${extension}`
-        );
-        counter++;
-      }
+      fs.renameSync(file.path, finalPath);
 
-      fs.renameSync(file.path, finalPath); // move file
-
-      const baseUrl = resolvePublicBaseUrl(3001);
       const relativePath = `storage/documents/${path.basename(finalPath)}`;
-      const fileUrl = `${baseUrl}/${relativePath}`;
+      const fileUrl = joinUrl(baseUrl, relativePath);
+
       const mimeType = file.mimetype;
-      const fileSizeRaw = file.size; // in bytes (integer)
+      const fileSizeRaw = Number(file.size) || 0;
       const fileSizeFormatted = formatFileSize(fileSizeRaw);
 
       const result = await knex("documents")
@@ -86,10 +111,10 @@ async function uploadDocuments(files) {
         })
         .returning(["id", "created_at", "updated_at"]);
 
-      const inserted = result[0];
+      const inserted = result?.[0];
 
       uploadedResults.push({
-        server_file_id: inserted.id,
+        server_file_id: String(inserted.id),
         server_file_name: path.basename(finalPath),
         server_file_path: relativePath,
         server_file_url: fileUrl,
@@ -104,7 +129,7 @@ async function uploadDocuments(files) {
       );
     } catch (err) {
       logger.error(
-        `| Upload Documents Server Helper | - Failed on file ${file.originalname}: ${err.message}`
+        `| Upload Documents Server Helper | - Failed on file ${file?.originalname}: ${err.message}`
       );
     }
   }
@@ -112,10 +137,15 @@ async function uploadDocuments(files) {
   return uploadedResults;
 }
 
+/**
+ * deleteDocuments
+ * Menghapus dokumen dari storage lokal dan menghapus row DB berdasarkan list id.
+ */
 async function deleteDocuments(documentIds = []) {
   const deleted = [];
+  const ids = Array.isArray(documentIds) ? documentIds : [];
 
-  for (const id of documentIds) {
+  for (const id of ids) {
     try {
       const document = await knex("documents")
         .select("file_path")
@@ -134,13 +164,13 @@ async function deleteDocuments(documentIds = []) {
         fs.unlinkSync(filePath);
       } else {
         logger.warn(
-          `| Delete Documents Server Helper | - File tidak ditemukan di path: ${filePath}`
+          `| Delete Documents Server Helper | - File tidak ditemukan: ${filePath}`
         );
       }
 
       await knex("documents").where({ id }).del();
 
-      deleted.push(id);
+      deleted.push(String(id));
       logger.info(
         `| Delete Documents Server Helper | - Dokumen ${id} berhasil dihapus.`
       );

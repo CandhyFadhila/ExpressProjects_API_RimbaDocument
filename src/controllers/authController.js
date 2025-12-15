@@ -6,7 +6,7 @@ const logger = require("../utils/logger");
 const knex = require("../config/database");
 const WithDataResource = require("../resources/WithDataResource");
 const WithoutDataResource = require("../resources/WithoutDataResource");
-const JWT_SECRET = process.env.JWT_SECRET_KEY || "secretkey";
+const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
 // ========== LOGIN CONTROLLER ==========
 exports.login = async (req, res) => {

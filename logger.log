@@ -1,0 +1,14 @@
+{"level":"info","message":"| Login | - Login success for email: rimba.development@gmail.com, at 2025-12-15T15:11:15.294Z","timestamp":"2025-12-15T15:11:15.294Z"}
+{"level":"info","message":"| Auth | - Invalid token, at 2025-12-15T15:11:41.441Z","timestamp":"2025-12-15T15:11:41.441Z"}
+{"level":"info","message":"| Auth | - Token valid for userId: 1, at 2025-12-15T15:11:56.467Z","timestamp":"2025-12-15T15:11:56.467Z"}
+{"level":"info","message":"| Upload Documents Server Helper | - Success: PDFKosongan.pdf (24.93 kB)","timestamp":"2025-12-15T15:11:56.498Z"}
+{"level":"info","message":"| Upload Documents Server Helper | - Success: PDFKosongan(1).pdf (24.93 kB)","timestamp":"2025-12-15T15:11:56.501Z"}
+{"level":"info","message":"| Auth | - Token valid for userId: 1, at 2025-12-15T15:21:30.894Z","timestamp":"2025-12-15T15:21:30.895Z"}
+{"level":"info","message":"| Upload Documents Server Helper | - Folder siap: E:\\Projects\\__EXIUM_PROJECT__\\microservices\\CMS\\rimba\\rimba-dokumen\\src\\public\\storage\\documents","timestamp":"2025-12-15T15:21:30.907Z"}
+{"level":"info","message":"| Upload Documents Server Helper | - Success: PDFKosongan(2).pdf (24.93 kB)","timestamp":"2025-12-15T15:21:30.917Z"}
+{"level":"info","message":"| Upload Documents Server Helper | - Success: PDFKosongan(3).pdf (24.93 kB)","timestamp":"2025-12-15T15:21:30.920Z"}
+{"level":"info","message":"| Auth | - Token valid for userId: 1, at 2025-12-15T15:22:31.136Z","timestamp":"2025-12-15T15:22:31.136Z"}
+{"level":"info","message":"| Delete Documents Server Helper | - Dokumen ded270cb-1e4d-4f86-9557-7f0c138eccab berhasil dihapus.","timestamp":"2025-12-15T15:22:31.157Z"}
+{"level":"info","message":"| Delete Documents Server Helper | - Dokumen 792baddb-dbe3-4a83-b11b-c35689b45207 berhasil dihapus.","timestamp":"2025-12-15T15:22:31.162Z"}
+{"level":"info","message":"| Delete Documents Server | - Dokumen id ded270cb-1e4d-4f86-9557-7f0c138eccab berhasil dihapus.","timestamp":"2025-12-15T15:22:31.163Z"}
+{"level":"info","message":"| Delete Documents Server | - Dokumen id 792baddb-dbe3-4a83-b11b-c35689b45207 berhasil dihapus.","timestamp":"2025-12-15T15:22:31.164Z"}
